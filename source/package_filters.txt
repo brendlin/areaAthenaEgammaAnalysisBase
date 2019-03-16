@@ -1,0 +1,12 @@
+#
+# Package filtering rules for the GitAnalysisTest1 project:
+#
+
+# Pick up EventLoop from the Athena repository:
++ athena/PhysicsAnalysis/ElectronPhotonID/ElectronPhotonShowerShapeFudgeTool
++ athena/PhysicsAnalysis/ElectronPhotonID/ElectronPhotonSelectorTools
+
+# Don't pick up anything else from the Athena repository:
+- athena/.*
+
+# Everything outside of the submodules should be picked up.
