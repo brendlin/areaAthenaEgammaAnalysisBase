@@ -10,7 +10,7 @@ arguments = $(Process) $(THEDIR)
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
-transfer_output_files = Nightly_AOD_gamma.pool.root
+transfer_output_files = Nightly_AOD_gamma.pool.root log.ESDtoAOD log.RAWtoESD
 
 # 86400 = 24 hours
 # 36000 = 10 hours
