@@ -3,7 +3,16 @@
 #
 
 #asetup AnalysisBase,21.2.56,here
-asetup Athena,master,2021-04-26T2101,here
+MY_RELEASE=2021-04-13T2101
+
+if [ -z "$BATCH_SYSTEM" ]; then
+    # BATCH_SYSTEM variable not set -- we are on an interactive machine
+    asetup Athena,master,$MY_RELEASE,here
+else
+    # We are on the batch node, which means we need an additional "64" argument
+    asetup Athena,master,$MY_RELEASE,64,here
+fi
+
 
 doExtras () {
     export MYCMAKE_TMP=(${CMAKE_PREFIX_PATH//:/ })

@@ -7,6 +7,7 @@ echo "athena -c \"particleType='gamma'\" \$TestArea/../build/\$Athena_PLATFORM/j
 echo ""
 echo "source doSubmit.sh GridDirectFiles/GridDirect_mc16_13TeV.423001.ParticleGun_single_photon_egammaET.recon.RDO.e3566_s3113_r9388.txt mc16a_outputdir"
 echo "source doSubmit.sh GridDirectFiles/GridDirect_mc16_13TeV.423001.ParticleGun_single_photon_egammaET.recon.RDO.e3566_s3113_r10470.txt mc16d_outputdir"
+echo "for i in \$(ls ../ | grep job); do ln -s ../\$i/Nightly_AOD_gamma.pool.root \${i}_Nightly_AOD_gamma.pool.root; done;"
 
 export CONDITIONSTAG="default:OFLCOND-MC16-SDR-RUN2-02"
 

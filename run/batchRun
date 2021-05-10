@@ -18,8 +18,9 @@ alias 'setupATLAS=source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh'
 source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh    
 
 # Set up this local version of athena
-cd /nfs/dust/atlas/user/brendlik/validation/conversionTuning/source
-asetup Athena,master,2021-04-26T2101,64,here
+cd $THEDIR/../../source
+echo -e ${GREEN} Setting up Athena from directory ${PWD} ${NC};
+source the_asetup.sh
 source $TestArea/../build/$Athena_PLATFORM/setup.sh
 
 echo -e ${GREEN} Running Reco_tf.py. ${NC};
