@@ -22,6 +22,8 @@ cd $THEDIR/../../source
 echo -e ${GREEN} Setting up Athena from directory ${PWD} ${NC};
 source the_asetup.sh
 source $TestArea/../build/$Athena_PLATFORM/setup.sh
+echo -e ${GREEN} Setting up Reco_tf arguments... ${PWD} ${NC};
+source $TestArea/../run/setupRecoTf.sh
 
 echo -e ${GREEN} Running Reco_tf.py. ${NC};
 cd $WORKER_DIR
@@ -31,6 +33,10 @@ echo THEDIR: $THEDIR
 echo WHICHFILENUMBER: $WHICHFILENUMBER
 echo INPUTLIST: $INPUTLIST
 echo INPUTFILE: $INPUTFILE
+echo CONDITIONSTAG: $CONDITIONSTAG
+echo PREEXEC: $PREEXEC
+echo POSTEXEC_A: $POSTEXEC_A
+echo POSTEXEC_B: $POSTEXEC_B
 
 Reco_tf.py --inputRDOFile=$INPUTFILE --outputAODFile=Nightly_AOD_gamma.pool.root \
 --autoConfiguration="everything" --conditionsTag="$CONDITIONSTAG" \
