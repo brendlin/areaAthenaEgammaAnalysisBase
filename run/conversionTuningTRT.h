@@ -1,4 +1,51 @@
 
+float eProbabilityHT_trans(float TRT_PID) {
+  double trans_TRT_PID(0.0);
+  double tau = 15.0;
+  double fEpsilon = 1.0e-30;  // to avoid zero division
+  double pid_tmp = TRT_PID;
+  if (pid_tmp >= 1.0) pid_tmp = 1.0 - 1.0e-15;  //this number comes from TMVA
+  else if (pid_tmp <= fEpsilon) pid_tmp = fEpsilon;
+  trans_TRT_PID = - log(1.0/pid_tmp - 1.0)*(1./double(tau));
+  return trans_TRT_PID;
+}
+
+float precisionHitFraction(const xAOD::TrackParticle& track) {
+  uint8_t dummy;
+
+  uint8_t nTrtHits(0);
+  if( track.summaryValue(dummy, xAOD::numberOfTRTHits))
+    nTrtHits = dummy;
+
+  uint8_t nTRTTubeHits(0);
+  if(track.summaryValue(dummy, xAOD::numberOfTRTTubeHits))
+    nTRTTubeHits = dummy;
+
+  float precHitFrac = -999;
+  if (nTrtHits>0 && nTRTTubeHits>=0)
+  {
+    precHitFrac = (1. - ((float)nTRTTubeHits)/((float)nTrtHits));
+  }
+
+  //std::cout << "precHitFrac = " << precHitFrac << std::endl;
+  return precHitFrac;
+}
+
+int nTRT(const xAOD::TrackParticle& track) {
+  uint8_t dummy;
+
+  uint8_t nTrtHits(0);
+  if( track.summaryValue(dummy, xAOD::numberOfTRTHits))
+    nTrtHits = dummy;
+  uint8_t nTrtOutliers(0);
+  if(track.summaryValue(dummy, xAOD::numberOfTRTOutliers))
+    nTrtOutliers = dummy;
+
+  uint8_t ntrt = nTrtHits + nTrtOutliers;
+
+  return ntrt;
+}
+
 void conversionTuningTRT(TFile* file,std::string key) {
 
   /* CONFIGURATION */
@@ -10,6 +57,12 @@ void conversionTuningTRT(TFile* file,std::string key) {
   TTree* outTree = NULL;
   float eProbabilityHT_0 = -999;
   float eProbabilityHT_1 = -999;
+  float eProbabilityHT_trans_0 = -999;
+  float eProbabilityHT_trans_1 = -999;
+  float eProbabilityNN_0 = -999;
+  float eProbabilityNN_1 = -999;
+  float eProbabilityNN_trans_0 = -999;
+  float eProbabilityNN_trans_1 = -999;
   float trueR = -999;
   int convType = -1;
   float recoPt = -999;
@@ -18,13 +71,25 @@ void conversionTuningTRT(TFile* file,std::string key) {
   float truthEta = -999;
   int nSi_0 = -1;
   int nSi_1 = -1;
+  int nTRT_0 = -1;
+  int nTRT_1 = -1;
+  float precHitFrac_0 = -999;
+  float precHitFrac_1 = -999;
   float mu = -1;
+
+  static const SG::AuxElement::ConstAccessor<float> acc_eProbabilityNN("eProbabilityNN");
 
   if (doNtuple) {
     outFile = new TFile(Form("%s_nano.root",key.c_str()), "RECREATE");
     outTree = new TTree("CollectionTree","tuning_tree");
     outTree->Branch("eProbabilityHT_0",&eProbabilityHT_0);
     outTree->Branch("eProbabilityHT_1",&eProbabilityHT_1);
+    outTree->Branch("eProbabilityHT_trans_0",&eProbabilityHT_trans_0);
+    outTree->Branch("eProbabilityHT_trans_1",&eProbabilityHT_trans_1);
+    outTree->Branch("eProbabilityNN_0",&eProbabilityNN_0);
+    outTree->Branch("eProbabilityNN_1",&eProbabilityNN_1);
+    outTree->Branch("eProbabilityNN_trans_0",&eProbabilityNN_trans_0);
+    outTree->Branch("eProbabilityNN_trans_1",&eProbabilityNN_trans_1);
     outTree->Branch("trueR",&trueR);
     outTree->Branch("convType",&convType);
     outTree->Branch("recoPt",&recoPt);
@@ -33,6 +98,10 @@ void conversionTuningTRT(TFile* file,std::string key) {
     outTree->Branch("truthEta",&truthEta);
     outTree->Branch("nSi_0",&nSi_0);
     outTree->Branch("nSi_1",&nSi_1);
+    outTree->Branch("nTRT_0",&nTRT_0);
+    outTree->Branch("nTRT_1",&nTRT_1);
+    outTree->Branch("precHitFrac_0",&precHitFrac_0);
+    outTree->Branch("precHitFrac_1",&precHitFrac_1);
     outTree->Branch("mu",&mu);
   }
 
@@ -75,6 +144,12 @@ void conversionTuningTRT(TFile* file,std::string key) {
 
       eProbabilityHT_0 = -999;
       eProbabilityHT_1 = -999;
+      eProbabilityHT_trans_0 = -999;
+      eProbabilityHT_trans_1 = -999;
+      eProbabilityNN_0 = -999;
+      eProbabilityNN_1 = -999;
+      eProbabilityNN_trans_0 = -999;
+      eProbabilityNN_trans_1 = -999;
       trueR = -999;
       convType = -1;
       recoPt = -999;
@@ -83,6 +158,10 @@ void conversionTuningTRT(TFile* file,std::string key) {
       truthEta = egtruth->eta();
       nSi_0 = -1;
       nSi_1 = -1;
+      nTRT_0 = -1;
+      nTRT_1 = -1;
+      precHitFrac_0 = -999;
+      precHitFrac_1 = -999;
 
       bool isTrueConv = xAOD::EgammaHelpers::isTrueConvertedPhoton(egtruth);
 
@@ -102,7 +181,7 @@ void conversionTuningTRT(TFile* file,std::string key) {
       }
 
       recoPt = photon->pt()/1000.;
-      recoEta = photon->eta()/1000.;
+      recoEta = photon->eta();
       //std::cout << "Reco photon pt/eta: " << recoPt << " " << recoEta << std::endl;
 
       bool isRecoConv = xAOD::EgammaHelpers::isConvertedPhoton(photon);
@@ -120,11 +199,21 @@ void conversionTuningTRT(TFile* file,std::string key) {
         
       if (trk0) {
         eProbabilityHT_0 = xAOD::EgammaHelpers::summaryValueFloat(*trk0, xAOD::eProbabilityHT);
+        eProbabilityHT_trans_0 = eProbabilityHT_trans(eProbabilityHT_0);
+        eProbabilityNN_0 = acc_eProbabilityNN(*trk0);
+        eProbabilityNN_trans_0 = eProbabilityHT_trans(eProbabilityNN_0);
         nSi_0 = xAOD::EgammaHelpers::numberOfSiHits(trk0);
+        nTRT_0 = nTRT(*trk0);
+        precHitFrac_0 = precisionHitFraction(*trk0);
       }
       if (trk1) {
         eProbabilityHT_1 = xAOD::EgammaHelpers::summaryValueFloat(*trk1, xAOD::eProbabilityHT);
+        eProbabilityHT_trans_1 = eProbabilityHT_trans(eProbabilityHT_1);
+        eProbabilityNN_1 = acc_eProbabilityNN(*trk1);
+        eProbabilityNN_trans_1 = eProbabilityHT_trans(eProbabilityNN_1);
         nSi_1 = xAOD::EgammaHelpers::numberOfSiHits(trk1);
+        nTRT_1 = nTRT(*trk1);
+        precHitFrac_1 = precisionHitFraction(*trk1);
       }
       //std::cout << "eProbability: " << eProbabilityHT_0 << ", " << eProbabilityHT_1 << std::endl;
 
