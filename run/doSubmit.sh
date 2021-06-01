@@ -7,6 +7,9 @@ THEDIR=$2 # Old directory was: run_batchFromGridpack
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
+# Split files into NSPLIT subjobs
+NSPLIT=2
+
 if [ -z "$TestArea" ]
 then
     # Make the directory, copy submit and run files there.
@@ -19,12 +22,12 @@ then
 
     # Make output directories
     cd $THEDIR
-    for i in $(seq 0 $NJOBS); do
+    for i in $(seq 0 $((NJOBS*NSPLIT-1)) ); do
         mkdir -p job$(printf "%03d" $i);
     done;
 
-    echo condor_submit submit THEDIR=$PWD NJOBS=$NJOBS
-    condor_submit submit THEDIR=$PWD NJOBS=$NJOBS
+    echo condor_submit submit THEDIR=$PWD NJOBS=$((NJOBS*NSPLIT))
+    condor_submit submit THEDIR=$PWD NJOBS=$((NJOBS*NSPLIT))
     cd -
     echo -e ${GREEN} Submitted. ${NC};
     echo -e ${GREEN} Done. ${NC};

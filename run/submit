@@ -16,9 +16,9 @@ transfer_output_files = Nightly_AOD_gamma.pool.root,log.ESDtoAOD,log.RAWtoESD
 # 36000 = 10 hours
 # 16200 = 4.5 hours
 
-+RequestRuntime = 16200
+# +RequestRuntime = 16200
 Request_Cpus = 1
-RequestMemory = 4000
+# RequestMemory = 4000
 
 Requirements = ( OpSysAndVer == "CentOS7" )
 

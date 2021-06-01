@@ -1,8 +1,14 @@
 #!/bin/bash
 echo starting batch job initialization
 
+# Make sure this NSPLIT value lines up with doSubmit.sh
+NSPLIT=2
+N_JOB=$1
 EL_JOBID=$(printf "%03d" $1)
-WHICHFILENUMBER=$(($1 + 1))
+WHICHFILENUMBER=$((1 + N_JOB / NSPLIT))
+# Below only works for NSPLIT=2
+SKIPEVENTS=$(( 1000*(N_JOB % NSPLIT) ))
+MAXEVENTS=$(( 1001*( (N_JOB+1) % NSPLIT) -1 ))
 
 # The worker node directory is the working directory
 WORKER_DIR=${PWD}
@@ -35,12 +41,16 @@ echo INPUTLIST: $INPUTLIST
 echo INPUTFILE: $INPUTFILE
 echo CONDITIONSTAG: $CONDITIONSTAG
 echo PREEXEC: $PREEXEC
+echo POSTEXEC_Y: $POSTEXEC_Y
 echo POSTEXEC_A: $POSTEXEC_A
 echo POSTEXEC_B: $POSTEXEC_B
+echo MAXEVENTS: $MAXEVENTS
+echo SKIPEVENTS: $SKIPEVENTS
 
 Reco_tf.py --inputRDOFile=$INPUTFILE --outputAODFile=Nightly_AOD_gamma.pool.root \
+--maxEvents=$MAXEVENTS --skipEvents=$SKIPEVENTS \
 --autoConfiguration="everything" --conditionsTag="$CONDITIONSTAG" \
---preExec="$PREEXEC" --postExec "$POSTEXEC_A" "$POSTEXEC_B"
+--preExec="$PREEXEC" --postExec "$POSTEXEC_Y" "$POSTEXEC_A" "$POSTEXEC_B"
 
 echo contents of directory below
 ls;
