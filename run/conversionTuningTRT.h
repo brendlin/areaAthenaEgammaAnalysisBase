@@ -76,6 +76,7 @@ void conversionTuningTRT(TFile* file,std::string key) {
   float precHitFrac_0 = -999;
   float precHitFrac_1 = -999;
   float mu = -1;
+  int nVertices = -1;
 
   static const SG::AuxElement::ConstAccessor<float> acc_eProbabilityNN("eProbabilityNN");
 
@@ -103,6 +104,7 @@ void conversionTuningTRT(TFile* file,std::string key) {
     outTree->Branch("precHitFrac_0",&precHitFrac_0);
     outTree->Branch("precHitFrac_1",&precHitFrac_1);
     outTree->Branch("mu",&mu);
+    outTree->Branch("nVertices",&nVertices);
   }
 
   std::cout << file->GetName() << std::endl;
@@ -154,6 +156,7 @@ void conversionTuningTRT(TFile* file,std::string key) {
       convType = -1;
       recoPt = -999;
       recoEta = -999;
+      nVertices = -1;
       truthPt = egtruth->pt()/1000.;
       truthEta = egtruth->eta();
       nSi_0 = -1;
@@ -182,6 +185,7 @@ void conversionTuningTRT(TFile* file,std::string key) {
 
       recoPt = photon->pt()/1000.;
       recoEta = photon->eta();
+      nVertices = photon->nVertices();
       //std::cout << "Reco photon pt/eta: " << recoPt << " " << recoEta << std::endl;
 
       bool isRecoConv = xAOD::EgammaHelpers::isConvertedPhoton(photon);
