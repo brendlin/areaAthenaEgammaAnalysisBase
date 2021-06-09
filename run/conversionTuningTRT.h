@@ -46,6 +46,16 @@ int nTRT(const xAOD::TrackParticle& track) {
   return ntrt;
 }
 
+int nTRTHoles(const xAOD::TrackParticle& track) {
+  uint8_t dummy;
+
+  uint8_t nTrtHoles(0);
+  if( track.summaryValue(dummy, xAOD::numberOfTRTHoles))
+    nTrtHoles = dummy;
+
+  return nTrtHoles;
+}
+
 void conversionTuningTRT(TFile* file,std::string key) {
 
   /* CONFIGURATION */
@@ -73,6 +83,10 @@ void conversionTuningTRT(TFile* file,std::string key) {
   int nSi_1 = -1;
   int nTRT_0 = -1;
   int nTRT_1 = -1;
+  int nTRTHoles_0 = -1;
+  int nTRTHoles_1 = -1;
+  float trkEta_0 = -999;
+  float trkEta_1 = -999;
   float precHitFrac_0 = -999;
   float precHitFrac_1 = -999;
   float mu = -1;
@@ -101,6 +115,10 @@ void conversionTuningTRT(TFile* file,std::string key) {
     outTree->Branch("nSi_1",&nSi_1);
     outTree->Branch("nTRT_0",&nTRT_0);
     outTree->Branch("nTRT_1",&nTRT_1);
+    outTree->Branch("nTRTHoles_0",&nTRTHoles_0);
+    outTree->Branch("nTRTHoles_1",&nTRTHoles_1);
+    outTree->Branch("trkEta_0",&trkEta_0);
+    outTree->Branch("trkEta_1",&trkEta_1);
     outTree->Branch("precHitFrac_0",&precHitFrac_0);
     outTree->Branch("precHitFrac_1",&precHitFrac_1);
     outTree->Branch("mu",&mu);
@@ -163,6 +181,10 @@ void conversionTuningTRT(TFile* file,std::string key) {
       nSi_1 = -1;
       nTRT_0 = -1;
       nTRT_1 = -1;
+      nTRTHoles_0 = -1;
+      nTRTHoles_1 = -1;
+      trkEta_0 = -999;
+      trkEta_1 = -999;
       precHitFrac_0 = -999;
       precHitFrac_1 = -999;
 
@@ -208,7 +230,11 @@ void conversionTuningTRT(TFile* file,std::string key) {
         eProbabilityNN_trans_0 = eProbabilityHT_trans(eProbabilityNN_0);
         nSi_0 = xAOD::EgammaHelpers::numberOfSiHits(trk0);
         nTRT_0 = nTRT(*trk0);
+        nTRTHoles_0 = nTRTHoles(*trk0);
         precHitFrac_0 = precisionHitFraction(*trk0);
+        float tanThetaOver2_0 = std::tan( trk0->theta() / 2.);
+        trkEta_0 = (tanThetaOver2_0 == 0) ? -999 : -std::log( tanThetaOver2_0 );
+        //std::cout << "Track eta is: " << trk0->eta() << " or " << eta << std::endl;
       }
       if (trk1) {
         eProbabilityHT_1 = xAOD::EgammaHelpers::summaryValueFloat(*trk1, xAOD::eProbabilityHT);
@@ -217,7 +243,10 @@ void conversionTuningTRT(TFile* file,std::string key) {
         eProbabilityNN_trans_1 = eProbabilityHT_trans(eProbabilityNN_1);
         nSi_1 = xAOD::EgammaHelpers::numberOfSiHits(trk1);
         nTRT_1 = nTRT(*trk1);
+        nTRTHoles_1 = nTRTHoles(*trk1);
         precHitFrac_1 = precisionHitFraction(*trk1);
+        float tanThetaOver2_1 = std::tan( trk1->theta() / 2.);
+        trkEta_1 = (tanThetaOver2_1 == 0) ? -999 : -std::log( tanThetaOver2_1 );
       }
       //std::cout << "eProbability: " << eProbabilityHT_0 << ", " << eProbabilityHT_1 << std::endl;
 
