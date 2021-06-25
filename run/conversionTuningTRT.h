@@ -87,6 +87,8 @@ void conversionTuningTRT(TFile* file,std::string key) {
   int nTRTHoles_1 = -1;
   float trkEta_0 = -999;
   float trkEta_1 = -999;
+  float trkPt_0 = -999;
+  float trkPt_1 = -999;
   float precHitFrac_0 = -999;
   float precHitFrac_1 = -999;
   float mu = -1;
@@ -119,6 +121,8 @@ void conversionTuningTRT(TFile* file,std::string key) {
     outTree->Branch("nTRTHoles_1",&nTRTHoles_1);
     outTree->Branch("trkEta_0",&trkEta_0);
     outTree->Branch("trkEta_1",&trkEta_1);
+    outTree->Branch("trkPt_0",&trkPt_0);
+    outTree->Branch("trkPt_1",&trkPt_1);
     outTree->Branch("precHitFrac_0",&precHitFrac_0);
     outTree->Branch("precHitFrac_1",&precHitFrac_1);
     outTree->Branch("mu",&mu);
@@ -185,6 +189,8 @@ void conversionTuningTRT(TFile* file,std::string key) {
       nTRTHoles_1 = -1;
       trkEta_0 = -999;
       trkEta_1 = -999;
+      trkPt_0 = -999;
+      trkPt_1 = -999;
       precHitFrac_0 = -999;
       precHitFrac_1 = -999;
 
@@ -234,6 +240,7 @@ void conversionTuningTRT(TFile* file,std::string key) {
         precHitFrac_0 = precisionHitFraction(*trk0);
         float tanThetaOver2_0 = std::tan( trk0->theta() / 2.);
         trkEta_0 = (tanThetaOver2_0 == 0) ? -999 : -std::log( tanThetaOver2_0 );
+        trkPt_0 = trk0->pt();
         //std::cout << "Track eta is: " << trk0->eta() << " or " << eta << std::endl;
       }
       if (trk1) {
@@ -247,6 +254,7 @@ void conversionTuningTRT(TFile* file,std::string key) {
         precHitFrac_1 = precisionHitFraction(*trk1);
         float tanThetaOver2_1 = std::tan( trk1->theta() / 2.);
         trkEta_1 = (tanThetaOver2_1 == 0) ? -999 : -std::log( tanThetaOver2_1 );
+        trkPt_1 = trk1->pt();
       }
       //std::cout << "eProbability: " << eProbabilityHT_0 << ", " << eProbabilityHT_1 << std::endl;
 
