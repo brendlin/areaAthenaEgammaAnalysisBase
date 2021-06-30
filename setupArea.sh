@@ -17,7 +17,7 @@ if [[ ! -d source/athena ]]; then
     mkdir -p source/athena
     cd source/athena
     git atlas init-workdir ssh://git@gitlab.cern.ch:7999/${GIT_USER}/athena.git . \
-        -p egammaValidation egammaAlgs InDetConversionFinderTools InDetRecExample InDetTrackSelectorTool
+        -p egammaValidation egammaAlgs InDetConversionFinderTools InDetRecExample InDetTrackSelectorTool InDetTrackScoringTools PROCTools
     # git atlas addpkg PhotonEfficiencyCorrection
     # git remote add egammaOrigin ssh://git@gitlab.cern.ch:7999/ATLAS-EGamma/athena.git
     git fetch upstream
