@@ -29,7 +29,7 @@ mymake () {
     echo doing Athena-aware make
     sleep 1
     cd $TestArea/../build
-    cmake -DATLAS_PACKAGE_FILTER_FILE=../source/package_filters.txt cmake ../source/athena/Projects/WorkDir/
+    cmake -DATLAS_PACKAGE_FILTER_FILE=../source/package_filters.txt ../source/athena/Projects/WorkDir/
 }
 
 mybuild () {
