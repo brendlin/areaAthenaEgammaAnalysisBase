@@ -1,0 +1,64 @@
+#!/bin/bash
+echo starting batch job initialization
+
+# Make sure this NSPLIT value lines up with doSubmit.sh
+NSPLIT=2
+N_JOB=$1
+EL_JOBID=$(printf "%03d" $1)
+WHICHFILENUMBER=$((1 + N_JOB / NSPLIT))
+# Below only works for NSPLIT=2
+SKIPEVENTS=$(( 1000*(N_JOB % NSPLIT) ))
+MAXEVENTS=$(( 1001*( (N_JOB+1) % NSPLIT) -1 ))
+
+# The worker node directory is the working directory
+WORKER_DIR=${PWD}
+echo -e ${GREEN} Starting from directory ${PWD} ${NC};
+# Get a specific file determined by a specific line in the input file.
+THEDIR=$2
+INPUTLIST=$(ls $THEDIR | grep txt)
+INPUTFILE=$(cat $THEDIR/$INPUTLIST | head -n $WHICHFILENUMBER | tail -n 1)
+
+# Set up ATLAS, athena
+export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
+alias 'setupATLAS=source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh'
+source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh    
+
+# Set up this local version of athena
+cd $THEDIR/../../source
+echo -e ${GREEN} Setting up Athena from directory ${PWD} ${NC};
+source the_asetup.sh
+source $TestArea/../build/$Athena_PLATFORM/setup.sh
+echo -e ${GREEN} Setting up Reco_tf arguments... ${PWD} ${NC};
+source $TestArea/../run/setupRecoTf.sh
+
+echo -e ${GREEN} Running Reco_tf.py. ${NC};
+cd $WORKER_DIR
+echo -e ${GREEN} Running from directory ${PWD} ${NC};
+
+echo THEDIR: $THEDIR
+echo WHICHFILENUMBER: $WHICHFILENUMBER
+echo INPUTLIST: $INPUTLIST
+echo INPUTFILE: $INPUTFILE
+echo CONDITIONSTAG: $CONDITIONSTAG
+echo PREEXEC: $PREEXEC
+echo POSTEXEC_Y: $POSTEXEC_Y
+echo POSTEXEC_A: $POSTEXEC_A
+echo POSTEXEC_B: $POSTEXEC_B
+echo MAXEVENTS: $MAXEVENTS
+echo SKIPEVENTS: $SKIPEVENTS
+
+Reco_tf.py --inputRDOFile=$INPUTFILE --outputAODFile=Nightly_AOD_gamma.pool.root \
+--maxEvents=$MAXEVENTS --skipEvents=$SKIPEVENTS \
+--autoConfiguration="everything" --conditionsTag="$CONDITIONSTAG" \
+--preExec="$PREEXEC" --postExec "$POSTEXEC_Y" "$POSTEXEC_A" "$POSTEXEC_B"
+
+echo contents of directory below
+ls;
+
+# athena -c "particleType='gamma'" $TestArea/../build/$Athena_PLATFORM/jobOptions/egammaValidation/egamma_art_checker_joboptions.py
+
+# Move from the temp space.
+# mv /tmp/$USER/$THEDIR/$THEJOBDIR $TestArea/../run/$THEDIR/.
+
+echo done.
+echo -e ${GREEN} Finished. ${NC};

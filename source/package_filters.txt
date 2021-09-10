@@ -3,8 +3,11 @@
 #
 
 # Pick up EventLoop from the Athena repository:
-+ athena/PhysicsAnalysis/ElectronPhotonID/ElectronPhotonShowerShapeFudgeTool
-+ athena/PhysicsAnalysis/ElectronPhotonID/ElectronPhotonSelectorTools
++ athena/Reconstruction/egamma/egammaValidation
++ athena/Reconstruction/egamma/egammaAlgs
++ athena/InnerDetector/InDetRecTools/InDetConversionFinderTools
++ athena/InnerDetector/InDetExample/InDetRecExample
++ athena/InnerDetector/InDetRecTools/InDetTrackSelectorTool
 
 # Don't pick up anything else from the Athena repository:
 - athena/.*
