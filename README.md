@@ -23,7 +23,10 @@ The general steps so far are, after checking out the package, do:
  ```
  
 This will check out athena in the source directory (sparse checkout), add some egamma packages,
-add egammaOrigin as a remote, and fetch the upstream. Then:
+add egammaOrigin as a remote, and fetch the upstream.
+
+Then, in the `source/the_asetup.sh` file, you must change the `MY_RELEASE` environment variable to the intended Athena release. Then you can use this script (and the shortcuts defined within it) to run asetup, run cmake make and build commands (see below):
+
  
  ```
  cd source
