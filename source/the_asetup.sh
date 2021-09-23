@@ -2,14 +2,15 @@
 # usage: source the_asetup.sh (from the source directory)
 #
 
-#asetup AnalysisBase,21.2.56,here
-MY_RELEASE=2021-04-13T2101
+# Set MY_RELEASE to the intended Athena release that you want to use.
+MY_RELEASE=2021-09-20T2101
 
 if [ -z "$BATCH_SYSTEM" ]; then
     # BATCH_SYSTEM variable not set -- we are on an interactive machine
     asetup Athena,master,$MY_RELEASE,here
 else
     # We are on the batch node, which means we need an additional "64" argument
+    # This is to avoid crashes and failures on the batch node.
     asetup Athena,master,$MY_RELEASE,64,here
 fi
 
