@@ -88,3 +88,21 @@ The ntuple relies on a back-end from the `genericUtils` package. To run the ntup
 source makeFlatNtuple.sh outputDir
 ```
 where `outputDir` is the output directory from your batch `reco_tf` run. This will make a flat ntuple in a new "ntuple" directory, ready for you to explore. To see what goes into the selection for the flat ntuple, you can find the selection macro at `conversionTuningTRT.h`.
+
+BONUS: Plotting scripts to Compare Releases
+---------
+A plotting script based on `genericUtils` has been added in the `plot` directory, called `releasecomparisons.py` with an associated config file `config_ReleaseComp.py`. The config file contains the details of the plot to be made (including which variables / conversion types / etc. to plot, and its style). Generally speaking, the plot is based on multiple calls to `TTree::Draw`, so it is very simplistic. Here is how to run it, assuming you have created a test ntuple and a reference ntuple:
+
+```bash
+python releasecomparisons.py --config config_ReleaseComp.py --test test_ntuple.root --reference ref_ntuple.root
+```
+
+There are a few other relevant options, which can also be used together:
+```bash
+--efficiency # plot the efficiency with respect to the *first* cut set specified in the cutcomparisons dict
+--ratio      # compare the releases in a pad underneath the main plot
+--normalize  # normalize all histograms (within the visible range of the histogram, i.e. not including overflows)
+--batch      # run in batch mode
+--save       # save histograms to pdf/.C/eps
+--outdir     # save to a specific output directory name
+```
