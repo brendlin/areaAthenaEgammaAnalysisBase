@@ -20,7 +20,7 @@ import PlotFunctions as plotfunc
 # import PlotFunctions as plotfunc
 import copy
 
-def DrawHistosCutComparison(variable,options,ref_hists=[],test_hists=[],name='') :
+def DrawHistosReleaseComparison(variable,options,ref_hists=[],test_hists=[],name='') :
     #
     # Clean up name
     #
@@ -134,24 +134,29 @@ def main(options,args) :
             if type(weight) == type(dict()) :
                 weight = weight[cname]
 
-            if ''.join(options.cuts+cutcomp+options.truthcuts) :
-                weight = (weight+'*(%s)'%(' && '.join(options.cuts+cutcomp+options.truthcuts).lstrip('& ').rstrip('& '))).lstrip('*')
+            # Weights/Cuts for the reference
+            if ''.join(options.cuts+cutcomp) :
+                weight_ref = (weight+'*(%s)'%(' && '.join(options.cuts+cutcomp).lstrip('& ').rstrip('& '))).lstrip('*')
+            else :
+                weight_ref = weight
 
-            dweight = '' # weight value (and cuts) applied to data
-            if ''.join(options.cuts+cutcomp[1:]+options.blindcut) :
-                dweight = '('+' && '.join(options.cuts+cutcomp+options.blindcut).lstrip('& ').rstrip('& ')+')'
+            # Weights/Cuts for the test (including additional test cuts)
+            weight_test = weight # weight value (and cuts) applied to test
+            if ''.join(options.cuts+cutcomp+options.additional_test_cuts) :
+                weight_test = (weight+'*(%s)'%(' && '.join(options.cuts+cutcomp+options.additional_test_cuts).lstrip('& ').rstrip('& '))).lstrip('*')
+            else :
+                weight_test = weight
 
+            # Make the plots
             if options.test :
-                test_hists_tmp = anaplot.GetVariableHistsFromTrees(trees_test,keys_test,v,dweight,options,files=files_test,inputname=inputname)
-                test_hists_tmp = anaplot.MergeSamples(test_hists_tmp,options,requireFullyMerged=True)
+                test_hists_tmp = anaplot.GetVariableHistsFromTrees(trees_test,keys_test,v,weight_test,options,files=files_test,inputname=inputname)
 
                 for d in test_hists_tmp :
                     d.SetTitle(cname)
                     test_hists.append(d)
 
             if options.reference :
-                ref_hists_tmp = anaplot.GetVariableHistsFromTrees(trees_ref,keys_ref,v,weight,options,scales=scales_ref,files=files_ref,inputname=inputname)
-                ref_hists_tmp = anaplot.MergeSamples(ref_hists_tmp,options)
+                ref_hists_tmp = anaplot.GetVariableHistsFromTrees(trees_ref,keys_ref,v,weight_ref,options,scales=scales_ref,files=files_ref,inputname=inputname)
                 anaplot.SetLegendLabels(ref_hists_tmp,options)
 
                 for s in ref_hists_tmp :
@@ -163,9 +168,6 @@ def main(options,args) :
                 if not hist : continue
                 hist.Scale(1/float(hist.Integral()))
 
-        if options.customnormalize :
-            options.customnormalize(v,ref_hists=ref_hists,data_hist=data_hist)
-
         # Hack to turn off labels (since they are already set) before another round of
         # PrepareSignalHistos.
         tmp_options = copy.copy(options)
@@ -176,16 +178,13 @@ def main(options,args) :
             h.SetTitle('remove')
 
         ## Special canvas:
-        cans.append(DrawHistosCutComparison(v,options,ref_hists=ref_hists,test_hists=test_hists))
+        cans.append(DrawHistosReleaseComparison(v,options,ref_hists=ref_hists,test_hists=test_hists))
 
     if options.afterburner :
         for can in cans :
             options.afterburner(can)
 
     anaplot.UpdateCanvases(cans,options)
-
-    if options.xAODInit :
-        ROOT.xAOD.ClearTransientTrees()
 
     if not options.batch :
         import code
@@ -227,6 +226,10 @@ if __name__ == '__main__':
 
     if hasattr(options.usermodule,'ref_label') :
         options.ref_label = options.usermodule.ref_label
+
+    options.additional_test_cuts = []
+    if hasattr(options.usermodule,'additional_test_cuts') :
+        options.additional_test_cuts = options.usermodule.additional_test_cuts
 
     if not options.variables :
         print ('Error! Please specify a variable!')

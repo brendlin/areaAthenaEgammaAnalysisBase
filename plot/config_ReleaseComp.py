@@ -152,9 +152,14 @@ def afterburner(can) :
     import PlotFunctions as plotfunc
 
     # Make the "reference, test" legend
-    file_leg = ROOT.TLegend(0.19,0.75,0.49,0.87)
+    if plotfunc.GetTopPad(can) :
+        file_leg = ROOT.TLegend(0.19,0.65,0.49,0.90)
+    else :
+        file_leg = ROOT.TLegend(0.19,0.75,0.49,0.92)
     file_leg.SetName('file_titles_%s'%(can.GetName()))
     file_leg.SetFillStyle(0)
+    file_leg.SetTextSize(18 if plotfunc.GetTopPad(can) else 24)
+
     leghist_ref = ROOT.TH1F()
     leghist_ref.SetMarkerColor(ROOT.kGray)
     leghist_ref.SetLineColor(ROOT.kGray)
@@ -165,6 +170,9 @@ def afterburner(can) :
     leghist_test.SetLineColor(ROOT.kGray)
     leghist_test.SetMarkerStyle(20)
     file_leg.AddEntry(leghist_test,test_label,'pe')
+    # For spacing
+    file_leg.AddEntry(0,'','')
+    file_leg.AddEntry(0,'','')
     can.cd()
     if plotfunc.GetTopPad(can) :
         plotfunc.GetTopPad(can).cd()
