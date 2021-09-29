@@ -6,10 +6,6 @@ treename = 'CollectionTree'
 
 doReleaseComparison = True
 
-import re
-import ROOT
-ROOT.gStyle.SetNumberContours(20)
-
 test_label = 'test'
 ref_label = 'ref'
 
@@ -149,6 +145,7 @@ rebin = {
 
 # Here you can do any last-minute manipulations of the plot
 def afterburner(can) :
+    import ROOT
     import PlotFunctions as plotfunc
 
     # Make the "reference, test" legend

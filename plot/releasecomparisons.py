@@ -64,13 +64,6 @@ def DrawHistosReleaseComparison(variable,options,ref_hists=[],test_hists=[],name
     else :
         plotfunc.FormatCanvasAxes(can)
 
-    text_lines = [plotfunc.GetSqrtsText(13)]
-    if options.fb > 0 :
-        text_lines += [plotfunc.GetLuminosityText(options.fb)]
-    text_lines += [plotfunc.GetAtlasInternalText()]
-    if hasattr(options,'plottext') and options.plottext :
-        text_lines += options.plottext
-
     if options.log :
         if options.ratio :
             if taxisfunc.MinimumForLog(can.GetPrimitive('pad_top')) > 0 :
@@ -80,10 +73,8 @@ def DrawHistosReleaseComparison(variable,options,ref_hists=[],test_hists=[],name
                 can.SetLogy()
 
     if options.ratio :
-        #plotfunc.DrawText(can,text_lines,0.2,0.65,0.5,0.90,totalentries=4)
         plotfunc.MakeLegend(can,0.53,0.65,0.92,0.90,totalentries=5,ncolumns=1,skip=['remove me'])
     else :
-        #plotfunc.DrawText(can,text_lines,0.2,0.75,0.5,0.94,totalentries=4,textsize=27)
         plotfunc.MakeLegend(can,0.53,0.75,0.94,0.92,totalentries=4,ncolumns=1,skip=['remove me'],
                             textsize=27)
 
@@ -115,8 +106,6 @@ def main(options,args) :
         options.labels[k] = options.test_label
     for k in keys_ref :
         options.labels[k] = options.ref_label
-
-    scales_ref = anaplot.GetScales(files_ref,trees_ref,keys_ref,options)
 
     cans = []
 
@@ -156,7 +145,7 @@ def main(options,args) :
                     test_hists.append(d)
 
             if options.reference :
-                ref_hists_tmp = anaplot.GetVariableHistsFromTrees(trees_ref,keys_ref,v,weight_ref,options,scales=scales_ref,files=files_ref,inputname=inputname)
+                ref_hists_tmp = anaplot.GetVariableHistsFromTrees(trees_ref,keys_ref,v,weight_ref,options,files=files_ref,inputname=inputname)
                 anaplot.SetLegendLabels(ref_hists_tmp,options)
 
                 for s in ref_hists_tmp :
@@ -208,14 +197,14 @@ if __name__ == '__main__':
 
     if options.ratio :
         print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-        print('%%','Taking the ratio of TEST divided by REF')
-        print('%%',' and plotting in the bottom pad.')
+        print('%% Taking the ratio of TEST divided by REF')
+        print('%% and plotting in the bottom pad.')
         print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 
     if options.efficiency :
         print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-        print ('%%','Important! Plotting the efficiency with the FIRST entry in cutcomparisons')
-        print ('%%',' as the denominator!')
+        print ('%% Important! Plotting the efficiency with the FIRST entry in cutcomparisons')
+        print ('%%  as the denominator!')
         print ('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 
     if hasattr(options.usermodule,'cutcomparisons') :
@@ -236,4 +225,3 @@ if __name__ == '__main__':
         sys.exit()
 
     main(options,args)
-
