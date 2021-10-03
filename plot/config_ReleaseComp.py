@@ -1,10 +1,5 @@
 
-# for use with cutcomparisons:
-doCompareAllConversions = True
-
 treename = 'CollectionTree'
-
-doReleaseComparison = True
 
 test_label = 'test'
 ref_label = 'ref'
@@ -62,6 +57,9 @@ cuts = [
     # 'precHitFrac_0 > 0.3',
     # '(eProbabilityHT_0 > 0.75 || nTRT_0 < 0)',
 ]
+
+# Additional cuts, applied ONLY to the test sample.
+additional_test_cuts = []
 
 cuts_all_truth_conv_photons = []
 cuts_reco_conv_photon = ['recoPt > 0','convType > 0']
